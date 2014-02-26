@@ -27,6 +27,7 @@
             minPosition: -266,
             tapToClose: true,
             touchToDrag: true,
+            noMultiTouch: true,
             slideIntent: 40, // degrees
             minDragDistance: 5
         },
@@ -48,6 +49,9 @@
         eventList = {},
         utils = {
             hasTouch: ('ontouchstart' in doc.documentElement || win.navigator.msPointerEnabled),
+            isMultiTouch: function(event) {
+                return event.touches && event.touches.length > 1;
+            },
             eventType: function(action) {
                 var eventTypes = {
                         down: (utils.hasTouch ? 'touchstart' : 'mousedown'),
@@ -262,7 +266,7 @@
                     var target = e.target ? e.target : e.srcElement,
                         ignoreParent = utils.parentUntil(target, 'data-snap-ignore');
                     
-                    if (ignoreParent) {
+                    if (ignoreParent || (settings.noMultiTouch && utils.isMultiTouch(e))) {
                         utils.dispatchEvent('ignore');
                         return;
                     }
